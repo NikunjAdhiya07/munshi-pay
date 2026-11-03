@@ -1,0 +1,2577 @@
+{
+  "project": {
+    "name": "Payroll Platform",
+    "updatedAt": "2026-10-07",
+    "activity": [
+      {
+        "at": "2026-10-07T07:54:50.414Z",
+        "text": "Board audit: 22 tasks removed or merged, 20 added, and every task moved into a module phase. The website phase W0 was dissolved."
+      }
+    ]
+  },
+  "models": [
+    {
+      "id": "cursor-grok",
+      "name": "Cursor Grok",
+      "tier": "complex"
+    },
+    {
+      "id": "cursor-fast",
+      "name": "Cursor Fast",
+      "tier": "simple"
+    },
+    {
+      "id": "claude-sonnet",
+      "name": "Claude Sonnet",
+      "tier": "medium"
+    },
+    {
+      "id": "claude-opus",
+      "name": "Claude Opus",
+      "tier": "complex"
+    }
+  ],
+  "phases": [
+    {
+      "id": "D0",
+      "name": "MunshiPay discovery",
+      "objective": "Map the authorized reference, write the functional analysis, and capture the screens the first pass could not open.",
+      "dependencies": [],
+      "deliverables": [
+        "docs/munshipay-analysis.md",
+        "Screen, workflow, and traceability inventories",
+        "Capture of the unobserved screens"
+      ]
+    },
+    {
+      "id": "P0",
+      "name": "Engineering operating system",
+      "objective": "Establish the task source of truth, generated execution board, documentation baseline, and reusable skills before product code.",
+      "dependencies": [],
+      "deliverables": [
+        "board/state.json",
+        "board/generate.mjs",
+        "skills/",
+        "docs/"
+      ]
+    },
+    {
+      "id": "P1",
+      "name": "Product foundation",
+      "objective": "Create a type-safe application skeleton with lint, format, typecheck, and unit-test tooling. No payroll features.",
+      "dependencies": ["P0"],
+      "deliverables": ["Runnable app shell", "Quality scripts", ".env.example"]
+    },
+    {
+      "id": "P2",
+      "name": "Domain architecture",
+      "objective": "Name the bounded contexts and module boundaries that the code already follows, and correct the architecture notes.",
+      "dependencies": ["P0"],
+      "deliverables": ["Bounded contexts", "Module import rules"]
+    },
+    {
+      "id": "P3",
+      "name": "Identity and access",
+      "objective": "Stored users, company membership, roles, menu rights, and company selection, enforced on the server.",
+      "dependencies": ["P1", "P2"],
+      "deliverables": [
+        "Role and rights model",
+        "Stored users and sessions",
+        "Rights and membership checks",
+        "Company selection",
+        "User, role, and rights screens"
+      ]
+    },
+    {
+      "id": "P4",
+      "name": "Persistence and file storage",
+      "objective": "Move tenant-owned records from the local JSON store (DEC-010) to PostgreSQL with forward-only migrations, and store files on Bunny (DEC-011).",
+      "dependencies": ["P3"],
+      "deliverables": [
+        "Schema",
+        "Migration workflow",
+        "Records in PostgreSQL",
+        "Private file storage"
+      ]
+    },
+    {
+      "id": "P5",
+      "name": "Design system and shell",
+      "objective": "The payroll visual system, application shell, and shared empty, loading, error, and data-origin states.",
+      "dependencies": ["P1"],
+      "deliverables": [
+        "Design tokens",
+        "App shell",
+        "Shared interaction states"
+      ]
+    },
+    {
+      "id": "P6",
+      "name": "Company and masters",
+      "objective": "Company list and profile, lookup lists, and professional-tax slabs for each client company.",
+      "dependencies": ["P3", "P5"],
+      "deliverables": [
+        "Company list and sites",
+        "Company profile",
+        "Lookup lists",
+        "PT slabs"
+      ]
+    },
+    {
+      "id": "P7",
+      "name": "Workforce records",
+      "objective": "Employee master data: list, profile, other details, nominees, documents, transfers, and code merges.",
+      "dependencies": ["P5", "P6"],
+      "deliverables": [
+        "Employee list",
+        "Employee profile",
+        "Nominees and documents",
+        "Transfer and merge"
+      ]
+    },
+    {
+      "id": "P8",
+      "name": "Compensation structures",
+      "objective": "Salary history, category percents, pay heads, and bulk rate change as versioned inputs to the engine.",
+      "dependencies": ["P7"],
+      "deliverables": [
+        "Salary history",
+        "Category percents",
+        "Pay heads",
+        "Salary breakup"
+      ]
+    },
+    {
+      "id": "P9",
+      "name": "Attendance, leave, and deductions",
+      "objective": "Holidays, shifts, monthly muster, leave records, loans, and monthly deductions that feed payroll.",
+      "dependencies": ["P7"],
+      "deliverables": [
+        "Holidays and shifts",
+        "Monthly muster",
+        "Leave policy, register, and encashment",
+        "Loans and deductions"
+      ]
+    },
+    {
+      "id": "P10",
+      "name": "Payroll engine",
+      "objective": "Tested money helpers and statutory contribution rules behind an explicit policy (DEC-004).",
+      "dependencies": ["P2", "P8"],
+      "deliverables": [
+        "Money helpers",
+        "Confirmed statutory rules",
+        "PF, ESI, PT"
+      ]
+    },
+    {
+      "id": "P11",
+      "name": "Payroll operations",
+      "objective": "Process a month, review exceptions, edit lines, summarize, lock, and settle leavers. The reference has no separate approval step.",
+      "dependencies": ["P8", "P9", "P10"],
+      "deliverables": [
+        "Process salary",
+        "Salary entry and summary",
+        "Period lock",
+        "Full and final"
+      ]
+    },
+    {
+      "id": "P12",
+      "name": "Payslips, reports, and dashboard",
+      "objective": "Payslips, the report catalog, statutory registers, and the operational dashboard, labeled by data origin.",
+      "dependencies": ["P11"],
+      "deliverables": [
+        "Payslip",
+        "Report catalog",
+        "Statutory reports",
+        "Dashboard"
+      ]
+    },
+    {
+      "id": "P13",
+      "name": "Data exchange",
+      "objective": "Excel import with preview and rejection report, and Excel export for masters and monthly data.",
+      "dependencies": ["P7", "P9"],
+      "deliverables": ["Import framework", "Imports", "Exports"]
+    },
+    {
+      "id": "P14",
+      "name": "Hardening",
+      "objective": "Verify tenant isolation, sensitive-data handling, accessibility, responsive behavior, and query shape on the built flows.",
+      "dependencies": ["P3", "P4", "P12", "P13"],
+      "deliverables": [
+        "Security review",
+        "Responsive and accessibility pass",
+        "Pagination and indexes"
+      ]
+    },
+    {
+      "id": "P15",
+      "name": "Release readiness",
+      "objective": "Make the application deployable with a repeatable check pipeline.",
+      "dependencies": ["P1", "P14"],
+      "deliverables": ["CI pipeline", "Deployment checklist"]
+    }
+  ],
+  "areas": [
+    {
+      "id": "engineering-os",
+      "name": "Engineering OS"
+    },
+    {
+      "id": "foundation",
+      "name": "Foundation"
+    },
+    {
+      "id": "architecture",
+      "name": "Architecture"
+    },
+    {
+      "id": "authentication",
+      "name": "Authentication"
+    },
+    {
+      "id": "database",
+      "name": "Database"
+    },
+    {
+      "id": "design-system",
+      "name": "Design system"
+    },
+    {
+      "id": "frontend",
+      "name": "Frontend"
+    },
+    {
+      "id": "backend",
+      "name": "Backend"
+    },
+    {
+      "id": "payroll-engine",
+      "name": "Payroll engine"
+    },
+    {
+      "id": "reports",
+      "name": "Reports"
+    },
+    {
+      "id": "security",
+      "name": "Security"
+    },
+    {
+      "id": "testing",
+      "name": "Testing"
+    },
+    {
+      "id": "devops",
+      "name": "DevOps"
+    },
+    {
+      "id": "documentation",
+      "name": "Documentation"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T-002",
+      "title": "Document the observed MunshiPay functional map",
+      "phaseId": "D0",
+      "areaId": "documentation",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": [],
+      "expectedCompletion": "2026-10-06",
+      "output": "docs/munshipay-analysis.md with screens, workflows, fields, reports, and traceability. Live payroll data was not modified.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "Analysis contains the observed modules and omits live secrets and government identifiers",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "startedAt": "2026-10-06"
+    },
+    {
+      "id": "T-001",
+      "title": "Build the engineering operating system",
+      "phaseId": "P0",
+      "areaId": "engineering-os",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": [],
+      "expectedCompletion": "2026-10-06",
+      "output": "State model, generator, 15 skills, baseline docs, and passing board tests",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "3 passed: phase lifecycle, largest-remainder shares, dependency gating",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "startedAt": "2026-10-06"
+    },
+    {
+      "id": "T-010",
+      "title": "Add repository hygiene and editor defaults",
+      "phaseId": "P1",
+      "areaId": "foundation",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "cursor-fast",
+      "dependencies": ["T-001"],
+      "expectedCompletion": "2026-10-06",
+      "output": "EditorConfig, LF attributes, and gitignore coverage",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "gitignore excludes .env and editor defaults set UTF-8 and LF",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "startedAt": "2026-10-06"
+    },
+    {
+      "id": "T-011",
+      "title": "Scaffold the TypeScript application shell",
+      "phaseId": "P1",
+      "areaId": "foundation",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-010"],
+      "expectedCompletion": "2026-10-06",
+      "output": "Next.js shell with a foundation page. No payroll data.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "Foundation page states features are not available and contains no pay figures",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled the static home page",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Responsive",
+          "status": "PASS",
+          "result": "Home page readable at desktop and 375px with no horizontal overflow",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "startedAt": "2026-10-06"
+    },
+    {
+      "id": "T-012",
+      "title": "Add lint, format, typecheck, and unit test scripts",
+      "phaseId": "P1",
+      "areaId": "testing",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "cursor-fast",
+      "dependencies": ["T-011"],
+      "expectedCompletion": "2026-10-06",
+      "output": "Biome lint and format scripts beside the existing typecheck and unit test scripts",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "package.json exposes lint, format, typecheck, and test; biome check passes",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "startedAt": "2026-10-06"
+    },
+    {
+      "id": "T-013",
+      "title": "Add the environment contract without secrets",
+      "phaseId": "P1",
+      "areaId": "security",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "cursor-fast",
+      "dependencies": ["T-010"],
+      "expectedCompletion": "2026-10-06",
+      "output": ".env.example lists DATABASE_URL and AUTH_SECRET with empty values",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": ".env.example has empty values and no embedded credentials",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "startedAt": "2026-10-06"
+    },
+    {
+      "id": "T-200",
+      "title": "Add the payroll calculation engine",
+      "phaseId": "P10",
+      "areaId": "payroll-engine",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-002"],
+      "expectedCompletion": "2026-10-06",
+      "output": "Pure engine for category splits, configured PF caps, and the four process exceptions",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "7 passed: split identity, PF cap, missing cap, per-day gross, blocked employees, adjustment",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "startedAt": "2026-10-06"
+    },
+    {
+      "id": "T-201",
+      "title": "Process a month with exceptions and a lock",
+      "phaseId": "P11",
+      "areaId": "backend",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-200"],
+      "expectedCompletion": "2026-10-06",
+      "output": "Payroll service writes lines, blocks a locked period, and checks menu rights",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "4 passed: exception set, payable nets, lock rejection, viewer cannot add",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "startedAt": "2026-10-06"
+    },
+    {
+      "id": "T-202",
+      "title": "Ship the payroll workspace",
+      "phaseId": "P5",
+      "areaId": "frontend",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-201", "T-012"],
+      "expectedCompletion": "2026-10-06",
+      "output": "Signed-in shell for employees, muster, payroll, leave, loans, reports, and period lock",
+      "tests": [
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled the sign-in page and the payroll routes",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "startedAt": "2026-10-06"
+    },
+    {
+      "tests": [],
+      "id": "T-211",
+      "title": "Capture the reference screens the first pass could not open",
+      "phaseId": "D0",
+      "areaId": "documentation",
+      "priority": "P1",
+      "status": "HUMAN_REVIEW",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-002"],
+      "description": "Discovery on 2026-10-06 saw several screens only as menu items or unauthorized pages. Tasks that depend on them stay blocked so the product does not guess (DEC-009).",
+      "humanReview": {
+        "why": "Create forms for shift, loan, deduction, leave policy, and leave encashment were unauthorized. Several screens were listed but not opened.",
+        "unknown": "Muster day-cell codes. Meaning of MD, WD, PD, CF, and OD, and whether Quick Entry feeds Process Salary. Leave Master contents. Names of the six leave-register buckets. Salary Entry edit form. Full and Final worksheet. Family List columns. Misc. Entry type labels. Company option lists for Pay Scale On, Leave Method, PF Cal., and ESI Cal. Layouts and file formats of the PF, ESI, and PT reports.",
+        "action": "Open those screens with a login that has create rights and send screenshots, or approve another discovery pass. Do not submit Process Salary, Lock, Delete, or password actions on live data.",
+        "after": "Append the findings to docs/munshipay-analysis.md and add or update a task for every screen whose behavior differs from ours."
+      }
+    },
+    {
+      "id": "T-020",
+      "title": "Record bounded contexts and module boundaries",
+      "phaseId": "P2",
+      "areaId": "architecture",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "claude-opus",
+      "dependencies": ["T-001"],
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "description": "The code already separates src/domain, src/server, and src/components. The contexts and import rules are not written down, and docs/architecture.md contains one claim the code does not meet.",
+      "output": "DEC-015 names nine contexts and the one-way import rules. docs/architecture.md maps each context to its server modules and screens, lists the rules, corrects the locked-line claim (lines store outputs and adjustments, T-215 adds the snapshot), states that import files sit on local disk until the Bunny move, and lists known gaps: inline logic left in actions.ts and three screens that read store.locks directly. recordMuster moved from payroll.ts to muster.ts so attendance owns the muster and asks payroll for the lock. The architecture skill points at DEC-015. src/server/architecture.test.ts checks the layer rules.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "8 passed in architecture tests: domain imports only domain, only actions and auth import next or react on the server, server and domain never import screens, client components import no server code, screens never write the store, only payroll calls the engine, only store and import touch the file system. Payroll tests pass after the muster move.",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "done": [
+        "DEC-002 (modular monolith), DEC-003 (integer money), DEC-008 (consultancy and company), and DEC-010 (local store) are recorded.",
+        "Domain math has no framework imports; the engine does not read the store.",
+        "The nine contexts are named in DEC-015 and mapped to modules and screens in docs/architecture.md.",
+        "Import rules between domain, server, boundary, and UI are written and tested.",
+        "docs/architecture.md no longer claims that locked lines store their inputs."
+      ],
+      "todo": []
+    },
+    {
+      "id": "T-030",
+      "title": "Define the role model and the menu-rights matrix",
+      "phaseId": "P3",
+      "areaId": "authentication",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "claude-opus",
+      "dependencies": ["T-020"],
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "description": "DEC-008 lists fixed roles. The reference uses roles that an administrator names and a view, add, edit, delete right per menu. The code has two seeded roles and ten menus.",
+      "output": "DEC-017 replaces the fixed DEC-008 roles with named roles per consultancy and a built-in Owner role that cannot be changed. A user holds one role per company membership, no consultancy role bypasses membership, an account owner joins every new company as Owner, and a company creator joins with the role they already hold. The decision lists the right for each sensitive action and forbids granting rights the giver lacks. Menus gain export, users, and one per report group, with labels on Locks and access. Unlock needs delete on control, downloads need view on export plus the screen's view, report pages and the report list need the group's view, and export links hide without the right. Older stores gain the new menu rows on load.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "7 passed in access tests: every menu labelled and every report group mapped to its own menu, owner holds every right and viewer only view, a missing row is closed, reports need both rights, exports need both rights, the viewer cannot unlock, and an older store gains the new rows without changing existing ones. Architecture tests pass. Typecheck clean.",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "done": [
+        "Rights exist per role and menu (view, add, edit, delete) for company, employees, masters, muster, loans, deductions, leave, payroll, reports, and control. Owner and viewer are seeded.",
+        "DEC-008 is reconciled with the reference's named roles in DEC-017.",
+        "Users belong to one consultancy and hold one role per company membership.",
+        "Export, users, and six report-group menus are added. Import already existed.",
+        "Unlock, delete, import, export, company creation, and user and role management each have a stated right, and unlock and export enforce theirs."
+      ],
+      "todo": []
+    },
+    {
+      "id": "T-031",
+      "title": "Replace the single environment login with stored users",
+      "phaseId": "P3",
+      "areaId": "authentication",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "claude-opus",
+      "dependencies": ["T-030"],
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "description": "Sign-in compares one username and password from environment variables, then writes a session with company c1 and role owner for every login.",
+      "output": "DEC-018 stores users with scrypt hashes, memberships, and a session version. The cookie holds user id, company id, and version; each request resolves the role from the membership. The first successful environment sign-in creates the account owner when the store has no users, and later environment password changes do not replace the hash. Failures are rows in the store. A password change increments the version, and replacePassword clears the cookie. The password form is S-041. Creating a company adds the account owner as Owner (S-005). The header switch accepts only a membership company. Review: no statutory formula, hashes and audit omit the password, and a viewer can sign in only for their companies.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "5 passed in users tests: the first environment sign-in creates an owner of every company and a later environment password does not replace the hash, a viewer signs in as a viewer and only sees their companies, eight failures lock the username until the window passes including after a JSON round trip, a password change ends the previous session and the audit omits the password, and sign-in is unconfigured when the store has no user and no environment login.",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "done": [
+        "The session is an HMAC-signed, httpOnly cookie, secure in production, with constant-time comparison.",
+        "Store users with a scrypt password hash and a list of company memberships.",
+        "The session carries the user id and version, and each request resolves the role from the membership. A viewer can sign in.",
+        "Failed sign-ins are stored, so a restart does not clear the lockout.",
+        "Sign-out deletes the cookie. A password change increments the session version, and replacePassword also deletes the cookie."
+      ],
+      "todo": []
+    },
+    {
+      "id": "T-032",
+      "title": "Enforce view rights, company membership, and employee ownership",
+      "phaseId": "P3",
+      "areaId": "security",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "claude-opus",
+      "dependencies": ["T-031"],
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "description": "Add and edit rights are checked on server actions. Several other checks are missing, found by reading src/server/actions.ts and the pages.",
+      "output": "Each workspace page calls requireView for its menu. The dashboard omits a section, and the figures behind it, when the role lacks that view. The header lists only membership companies, and switchCompany refuses any other id. Loan, deduction, and leave encashment refuse an employee outside the company. Every remove action asks for delete. Review: no statutory formula, hiding a nav link is not the check, and a missing membership sends the login back to Select Company.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "20 passed in src/server/rights.test.ts: a path takes the menu of its longest route, a role without view loses that menu's paths and a login without a role sees only the dashboard, every side menu item has a menu, every page under src/app/app calls requireView for its own menu and none reads data on a bare session, every route handler checks a right, the dashboard gates each section, every server action except sign-in and session ones is guarded, every remove and unlock action asks for delete, switchCompany and enterCompany use memberOf, memberOf is false for another company or an unknown company or user, and a loan, deduction, leave balance, encashment, or line adjustment for an employee of another company is refused and changes nothing",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build passed. Typecheck, biome, and npm test (234) passed",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "UI",
+          "status": "PASS",
+          "result": "On a throwaway server with a viewer who has no payroll or loans view and belongs only to Northwind: Select Company listed one company, the side menu left out Process salary, Salary entry, Salary summary, Salary register, Salary slips, and Loans, and the dashboard showed no pay figures, run status, or process button. Opening the register, summary, a slip, and loans by URL returned no page content and sent the viewer to the dashboard with a permission message. A forged switch to Harbour Logistics was refused and the company stayed Northwind. The owner saw every menu item and every dashboard section. Page overflow at 406px was 0",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "done": [
+        "Every server action calls guard(), which checks the add or edit right and that the session company exists.",
+        "A viewer cannot add employees (payroll.test).",
+        "Lock and unlock require a typed confirmation word.",
+        "Each page checks the view right for its menu. The dashboard hides sections the role cannot view.",
+        "The header switch accepts only a company this login belongs to.",
+        "Loan, deduction, and leave actions refuse an employee that is not in the session company.",
+        "Every remove action asks for the delete right."
+      ],
+      "todo": []
+    },
+    {
+      "id": "S-001",
+      "title": "Sign in and company selection",
+      "phaseId": "P3",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-031"],
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "output": "Sign-in writes a session with an empty company and opens Select Company. Enter is allowed only for a membership company and then opens the dashboard. Search filters name, short name, and state. Logout on that page returns to sign-in. The header switch accepts only a membership company. Review: wrong password showed the error and saved no user, then the owner list showed both seeded companies, Harbour search left one row, Enter opened Northwind, and logout returned to sign-in. Page overflow was 0 at 390 and 1440.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "Users tests cover membership-only company lists and a viewer who cannot open another company. Sign-in with an empty company is the path the Select Company page requires.",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "UI",
+          "status": "PASS",
+          "result": "On a throwaway server, a wrong password showed User id or password is incorrect. The owner then saw Northwind Components and Harbour Logistics, search Harbour left only Harbour, Enter opened the Northwind dashboard, and Log out returned to sign-in. Overflow was 0 at 390px and 1440px.",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Sign in",
+        "order": 1,
+        "path": "/"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Sign In takes User Id, Password, and Submit. Select Company then lists the companies this login may open, and Enter opens one and lands on Home. The reference route /CompanyList/SelectCompany is the step behind Enter, not a separate screen, so the old Confirm company and Select company tasks are folded in here.",
+      "done": [
+        "Sign-in asks for a username and password, rejects a wrong password, and signs out.",
+        "The header shows the active company and switches it. T-032 limits that switch to a membership company.",
+        "After sign-in, Select Company lists membership companies and Enter opens the dashboard.",
+        "Logout from the company list returns to sign-in."
+      ],
+      "todo": []
+    },
+    {
+      "id": "S-041",
+      "title": "User master",
+      "phaseId": "P3",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-031", "S-042"],
+      "tests": [],
+      "page": {
+        "group": "Control panel",
+        "order": 41,
+        "path": "/UserMaster/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. User Master lists user name, role, and selected company, with create, edit, and delete. Retrieve Password only shows a stored password, which this product will not do, so password reset lives here.",
+      "done": ["Sign-in uses one environment login. There is no user list."],
+      "todo": [
+        "A user list with name, role, companies, create, edit, and delete.",
+        "Reset a user's password by setting a new one. Never display a stored password.",
+        "Assign a user to companies the administrator belongs to."
+      ]
+    },
+    {
+      "id": "S-042",
+      "title": "User roles and menu rights",
+      "phaseId": "P3",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-030", "T-032"],
+      "tests": [],
+      "page": {
+        "group": "Control panel",
+        "order": 42,
+        "path": "/UserRights/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. User Role is a form with role status and role name. User Rights is a per-role grid of menu, view, add, edit, and delete with header checkboxes and Update All Rights. Both are one screen here.",
+      "done": [
+        "Menu rights exist for the owner and viewer roles, and the Locks and access page shows the signed-in role's rights."
+      ],
+      "todo": [
+        "Create and rename roles, with a status.",
+        "Pick a role and edit each menu's view, add, edit, and delete right, with header checkboxes to set a column.",
+        "Changes are audited and take effect on the next request."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-040",
+      "title": "Add organization, company, and membership schema",
+      "phaseId": "P4",
+      "areaId": "database",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["T-030"],
+      "done": [
+        "Company-owned records already carry companyId in the local store."
+      ],
+      "todo": [
+        "Tables for consultancy, company, user, membership, role, and rights from T-030.",
+        "A company foreign key on every tenant-owned table."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-041",
+      "title": "Add the forward-only migration workflow",
+      "phaseId": "P4",
+      "areaId": "database",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-040", "T-012"],
+      "done": [".env.example already lists DATABASE_URL with an empty value."],
+      "todo": [
+        "Install Drizzle and a PostgreSQL driver, and add generate and migrate scripts.",
+        "Document a local development database.",
+        "Fail CI when a migration is edited after it ships."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-213",
+      "title": "Move company, employee, and master records to PostgreSQL",
+      "phaseId": "P4",
+      "areaId": "database",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["T-041"],
+      "done": [
+        "src/server/store.ts is the only module that reads or writes data/store.json (DEC-010)."
+      ],
+      "todo": [
+        "Tables and repositories for companies, employees with salary rows, nominees and documents, lookup lists, holidays, shifts, categories, and PT slabs.",
+        "Import data/store.json into a development database once.",
+        "Money columns are integer paise."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-214",
+      "title": "Move attendance, leave, loan, and deduction records to PostgreSQL",
+      "phaseId": "P4",
+      "areaId": "database",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["T-213"],
+      "done": [],
+      "todo": [
+        "Tables and repositories for muster, loans, deductions, leave policy, leave balances, and encashments.",
+        "Unique keys per company, employee, and period where the screens assume one row."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-215",
+      "title": "Move payroll runs, locks, and audit to PostgreSQL with an input snapshot",
+      "phaseId": "P4",
+      "areaId": "database",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-opus",
+      "dependencies": ["T-213"],
+      "done": [
+        "A run stores one line per employee with computed amounts and its exceptions.",
+        "A lock record stores who locked the month and when. Audit entries are kept per company."
+      ],
+      "todo": [
+        "Store each line's inputs (rate, category percents, paid days, deductions, loans, PF and ESI settings) beside its outputs, so a locked month never changes when masters change.",
+        "Write a run, its lines, and its audit entry in one transaction.",
+        "Make the audit table append-only."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-216",
+      "title": "Store employee documents on Bunny Storage",
+      "phaseId": "P4",
+      "areaId": "backend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-opus",
+      "dependencies": ["T-032", "T-213"],
+      "description": "DEC-011 chose Bunny Storage with Bunny CDN, but no task implemented it. Needs the storage and CDN keys in an untracked .env when it is tested.",
+      "done": [],
+      "todo": [
+        "Upload to a private storage zone and keep only the path and metadata in the database.",
+        "Serve through short-lived token-authenticated CDN URLs, minted after the company and role check.",
+        "Add the variable names to .env.example with empty values.",
+        "Limit file size and type, and sanitize file names."
+      ]
+    },
+    {
+      "id": "T-051",
+      "title": "Add error, not-found, and data-origin states",
+      "phaseId": "P5",
+      "areaId": "design-system",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "cursor-fast",
+      "dependencies": ["T-202"],
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "2 passed: the sample seed is demo, a saved store and an older file without the flag are the company store, and the first save clears the demo label",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "description": "The shell has an empty-state component, a flash message, and a loading screen. Error and not-found boundaries do not exist, and the data-origin label is fixed text.",
+      "output": "Route error and not-found pages state the failure and link back, without showing the error text. The origin line says Demo only for the untouched sample. A saved store, and an older file, says the figures are from this company's payroll store. Missing employee, company, and salary slip use the shared missing state.",
+      "done": [
+        "Empty, Flash, and the signed-in loading screen exist and are used on most pages.",
+        "Tables stack into labeled rows on a phone.",
+        "Route error and not-found boundaries show a plain message and a way back.",
+        "The origin line says Demo only for the untouched sample. A saved store is not labeled as a demo.",
+        "Missing employee, company, and salary slip use the shared missing state instead of a bare paragraph."
+      ],
+      "todo": []
+    },
+    {
+      "id": "S-005",
+      "title": "Company list and sites",
+      "phaseId": "P6",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-032", "T-202"],
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "output": "Companies lists membership companies with number, short name, name, location, city, state, kind, and Edit. Edit opens that company's profile. Create company and Create site need add on company. A site is a company record under the current company. An account owner joins as Owner. Anyone else keeps the role they already hold, and percents start unset. Review: no statutory default was copied onto a new company, a duplicate short name is refused, and the rendered list and profile for an owner session showed the columns, both seeded companies, Edit, and both create forms. The IDE browser did not complete a click-through.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "Creating a company keeps a viewer as viewer and gives an account owner the Owner role. A site stores the parent company. A blank name, a duplicate short name, and a creator who is not a member are refused and add nothing. Saving a short name another company already uses leaves the saved name unchanged.",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "UI",
+          "status": "PASS",
+          "result": "An owner session's company list HTML included Company number, Short name, Northwind Components, Harbour Logistics, Gujarat, Maharashtra, Edit, Create company, and Create site. The profile HTML included Company number, Location, City, and Save company.",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Master",
+        "order": 5,
+        "path": "/Company/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Company is a list (edit, view, company number, short name, name, location, city, state) with Create New Company and Create New Site/Unit. Create New Company was unauthorized for the observed login. A site is a company record, so it is created from the same profile form.",
+      "done": [
+        "The header lists the companies and switches between them.",
+        "The company profile saves name, short name, location, city, state, the professional-tax switch, PF and ESI employee percents, the PF limit, and the ESI exception limit.",
+        "The company list shows company number, short name, name, location, city, and state, and Edit opens that profile.",
+        "Create company and create site need add on the company menu. A site is a company record under the current company."
+      ],
+      "todo": []
+    },
+    {
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "256 passed, 15 new. Domain: every reference field has a home, the field list and profile type agree, a blank profile holds no default, an older company gains blank fields, rates take three decimals from 0 to 100, a submitted profile parses to typed values, masked account, PAN, and TAN keep the saved value, bad pin code, email, phone, IFSC, PAN, TAN, dates, rates, amounts, radios, and long text are refused with the field named, and a logo is judged by its bytes. Server: the whole profile saves together and the audit holds no secret, a refused field or setting leaves the company and audit unchanged, a logo can be set, refused, kept, and removed, a new company starts blank, a new company or site is created with every profile field, logo, and setting, and a refused field creates nothing and leaves the audit unchanged. Architecture tests pass.",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled /app/company, /app/company/new, and /app/company/profile. Typecheck and biome check clean.",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "UI",
+          "status": "PASS",
+          "result": "In a browser as the owner of Northwind: filled address, email, phone, district, pin code, IFSC, account, PAN, A/C-2 percent and minimum, PF and ESI radios, ESI on OT, and a logo, then saved. The notice showed, values persisted, IFSC was uppercased, the account and PAN showed masked, and the logo displayed. Saving again with the masked values untouched was accepted. A pin code of 12 was refused with the message, the other typed values were kept, and the address held no account or PAN. No console errors.",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "UI",
+          "status": "PASS",
+          "result": "In a browser as an admin of Harbour: opened Create company, entered identity, district, PF and ESI settings, and a bad PAN. The page returned with the message and every typed value kept, and the PAN cleared. After correcting the PAN and adding an IFSC in lower case, the company was created: the store held the district, the upper-cased IFSC, the PAN, PF number, PF percent 12, and ESI limit 21000 rupees in paise, and the audit entry named the short name only. Create site created a site under the current company with professional tax on. Create site and Create company buttons show on the company list only with the add right.",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Responsive",
+          "status": "PASS",
+          "result": "Page overflow was 0 at 390, 768, 1440, and 1920. The sections stack on a phone, sit in two columns from 1180, and three from 1700, and the save bar stays reachable.",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "id": "T-212",
+      "title": "Company profile: identity, address, bank, and registration numbers",
+      "phaseId": "P6",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "claude-sonnet",
+      "dependencies": ["S-005"],
+      "description": "Verified against the reference Company Profile screen (Company Details tab) from the screenshot supplied on 2026-10-11, and https://munshipay.com/. Branding, logos, and contact addresses are not copied. This task covers the plain-data fields. Every value is stored blank until the company enters it, and none of the reference's sample values is used as a default (DEC-004). The fields that already fed payroll still do; the new pay-rule, PF account, and ESI account fields are recorded only until the rule behind each is confirmed (T-071, T-217).",
+      "done": [
+        "Name, short name, and state are stored and editable.",
+        "Establishment type, status, view, address, email, phone, branch or location, city, district, state, and pin code are stored, with email, phone, and pin code checked.",
+        "Company bank: bank name from the Misc. bank list, IFSC code, account number, and bank address. The account number is masked on screen.",
+        "Contractor or unit: establishment type, name, address, PT as per employee state, professional tax, IT auto, PT number, PAN, and TAN. PAN, TAN, and IFSC formats are checked, and PAN and TAN are masked.",
+        "Pay rules recorded as stated: pay scale on, leave method, leave calculation on, minimum wage limit, bonus percent and limit, OT on, OT ratio, and ESI on OT.",
+        "Provident fund: PF number, start date, PF limit, PF employee percent, ext code, Diff EPF, pension A/C 10, A/C-2, A/C-21, and A/C-22 with their minimums, PF group, company group, office, and PF on basic or allowance.",
+        "ESI: ESI number, start date, ESI limit, employee and employer percent, company group, local office, and ESI on gross or set ESI all.",
+        "A logo upload with preview and remove, limited to a small PNG or JPEG.",
+        "Saving writes an audit entry that names the company only.",
+        "Create company and Create site open /app/company/new, which holds the same sections and fields as the edit profile, including the logo. Nothing is created unless every field passes, and a refused save keeps what was typed."
+      ],
+      "todo": [],
+      "startedAt": "2026-10-11",
+      "expectedCompletion": "2026-10-11",
+      "output": "The company profile at /app/company/profile now holds every field on the reference Company Details tab in six sections: company details, logo and bank, contractor or unit, pay rules, provident fund, and ESI. Fields come from one list in the domain (src/domain/companyProfile.ts) that drives the form and the validation. Bank account, PAN, and TAN show masked and keep their saved value when left as shown, and no secret goes into the audit entry or the address after a refused save. Saving checks every field first and writes nothing when one is refused. The logo is a PNG or JPEG up to 150 KB, judged by its first bytes; SVG is refused. Older stores gain a blank profile on load. Creating a company or site uses the same form and the same checks, with every value blank until typed."
+    },
+    {
+      "id": "S-016",
+      "title": "PT master",
+      "phaseId": "P6",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-202"],
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "9 passed in slabs tests: paise parsing, add/edit/delete audit, validation, company and viewer rights, as-on selection, inclusive limits with overlap and gap, overlap warning scope, revised set in processing, locked month unchanged",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Master",
+        "order": 16,
+        "path": "/PT/Create"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. PT Master is a slab table: as-on date, state, lower limit, upper limit, and amount. Overlap rules were not shown.",
+      "output": "PT slabs can be edited and deleted with an audit entry that omits amounts. A month uses the latest as-on set on or before the month end (DEC-013). Overlapping slabs warn and charge nothing until T-210. Checked the table, edit form, and delete confirmation at 1440, 390, and 320: no horizontal overflow, and the phone list stacks each slab with its labels.",
+      "done": [
+        "A slab stores as-on date, state, lower limit, upper limit, and amount in paise, and the list shows state, range, and amount.",
+        "Process salary charges PT only when the company's PT switch is on and exactly one slab for the company state contains the month's gross.",
+        "Edit and delete a slab, with an audit entry.",
+        "Each month uses the slab set with the latest as-on date on or before the month end.",
+        "Slabs that overlap another slab for the same state and as-on date are flagged. Which slab wins is decided in T-210.",
+        "The slab table, edit form, and delete confirmation fit at 1440, 390, and 320 without horizontal overflow. On a phone each slab stacks with its labels."
+      ],
+      "todo": []
+    },
+    {
+      "id": "S-017",
+      "title": "Misc. entry",
+      "phaseId": "P6",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "output": "Misc. entry page at /app/misc with add, rename, and guarded delete, and list pickers on the employee forms",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-202"],
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "11 passed in src/server/misc.test.ts: add rules, unchanged store after a refusal, usage counts per company, rename moves employees, bank rename moves salary and PF bank, delete refused while used, other-company entry refused, listed-value check for employee forms",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled /app/misc and typecheck passed",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Responsive",
+          "status": "PASS",
+          "result": "At 406px /app/misc has no horizontal overflow. In the browser a repeated name was refused with the input kept, add worked, rename moved the employee, and the profile showed list pickers",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Master",
+        "order": 17,
+        "path": "/Dmast/Create"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Misc. Entry requires a type and a description. Department and designation on the employee form come from this list.",
+      "done": [
+        "Department, designation, and bank entries can be added with a required description.",
+        "The new-employee form picks department and designation from these lists.",
+        "Misc. entry has its own page with a list per type, edit, and delete. A repeated description in the same list, a blank one, and one over 60 characters are refused, and the form keeps what was typed.",
+        "Delete is refused while an employee uses the entry. Renaming updates the employees who carry the old text. Add, rename, and delete write an audit entry and are scoped to the active company.",
+        "The employee profile and Other tab pick department, designation, salary bank, and PF bank from the lists. The server refuses a value that is not listed, and an older free-text value stays until it is changed."
+      ],
+      "todo": []
+    },
+    {
+      "id": "S-006",
+      "title": "Employees",
+      "phaseId": "P7",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-202"],
+      "expectedCompletion": "2026-10-07",
+      "output": "Employee list adds birth date, UAN, PF number, and ESI number, with page sizes 10 to 500, sortable headers, and an active or left filter. Delete asks for the employee code, writes an audit entry without government identifiers, and refuses anyone already in a processed run.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "2 passed: page size, employment, and sort stay on the allowed values; delete refuses a processed employee and removes one who was never processed",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Master",
+        "order": 6,
+        "path": "/Employee/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. The employee list shows code, name, designation, department, dates, UAN, PF, ESI, and site, with search, sort, and paging.",
+      "done": [
+        "Search over code, name, and department, with previous and next at 8 rows per page and a card layout on a phone.",
+        "Columns: code, name, department, designation, join date, and left date. Export of the filtered list as CSV.",
+        "Add employee needs the add right.",
+        "Missing-field and event links from the dashboard filter this list, and the export uses the same filter.",
+        "Columns include birth date, UAN, PF number, and ESI number. Headers sort, and the page size is 10, 25, 50, 100, or 500.",
+        "The list filters to active or left employees.",
+        "Delete asks for the employee code, writes an audit entry, and refuses an employee who is already in a processed run."
+      ],
+      "todo": [],
+      "startedAt": "2026-10-07"
+    },
+    {
+      "id": "S-008",
+      "title": "Employee profile (create and edit)",
+      "phaseId": "P7",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "output": "Create and edit profile with gender, split name, addresses, PF and ESI dates, bonus and leave flags, server-assigned code, and masked identity fields",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-202", "S-017"],
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "12 passed in src/domain/employeeFields.test.ts (built full name, next code keeps prefix and padding and is never a used code, case-blind code match, masking keeps four characters and the length, untouched mask keeps the saved value, typed or cleared value replaces it, real calendar dates) and 12 passed in src/server/employeeProfile.test.ts (next code per company, name built from parts, own PF and ESI flags and defaults, no duplicate code, every refusal leaves the store and audit untouched, audit holds the code and no values, masked identity kept, typed or cleared identity replaced, extra fields recorded, blank join date kept, other company refused)",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled /app/employees/new and /app/employees/[id]. Typecheck and biome on src passed",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Responsive",
+          "status": "PASS",
+          "result": "At 406px /app/employees/new and the profile tab have no horizontal overflow. In the browser the new page showed E007 read-only, a name of spaces was refused with the typed join date, mobile, and ESI choice kept, and a valid save went to the new employee Meera Nair, after which the new page showed E008. On the profile tab Aadhaar, PAN, and account showed as XXXXXXXX1234, XXXXXX234F, and XXXXXX3344 and the full values were not in the page HTML. Saving again with the masks untouched kept the stored values, and the audit entries held no values",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Master",
+        "order": 8,
+        "path": "/Employee/Edit"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Create requires code, name, and join date, and sets salary base, bank, PF, and ESI on the same form. Edit adds left date and reasons, and tabs to Other, Salary, Nominee, and Document. Create and edit share one profile form, so the old New employee task is folded in here.",
+      "done": [
+        "Create requires a name and join date, takes gender (default male), salary base, department, designation, mobile, and email, and sets PF and ESI deduction, both on by default (DEC-019).",
+        "The employee code is the next one in the company, shown read-only and assigned on save. A posted code is never used, and a code already used in the company is refused.",
+        "Edit covers first, middle, and last name with the built full name, gender, mobile, email, local and permanent address, payment method, bank, salary base, department, designation, marital status, birth date, join and left dates with reason, PAN, Aadhaar, PF and ESI details with their join and leave dates and reasons, ESI dispensary, and the bonus, leave encashment, and ABRY flags.",
+        "Aadhaar, PAN, and account numbers show masked, keep their saved value when untouched, and can be replaced or cleared. Audit entries name the employee code and carry no values.",
+        "Every field is checked before anything is saved: choices, real dates, left and leave dates not before join dates, listed department, designation, and bank, and field length limits.",
+        "Profile, Other, Salary, Nominee, and Documents are tabs on the employee page."
+      ],
+      "todo": [
+        "Photo upload needs file storage (T-216).",
+        "The bonus, leave encashment, and ABRY flags and the PF and ESI join and leave dates are recorded only. Pay does not read them yet.",
+        "There is no reveal control for masked identity numbers. Type a new value to change one."
+      ]
+    },
+    {
+      "id": "S-009",
+      "title": "Employee other details",
+      "phaseId": "P7",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["S-008", "S-024"],
+      "tests": [],
+      "page": {
+        "group": "Master",
+        "order": 9,
+        "path": "/Employee/OtherDtl"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Other details hold category, shift, contacts, and a PF bank that is separate from the salary bank.",
+      "done": [
+        "Blood group, shift, week off, notice days, and one emergency contact (name and phone) can be saved.",
+        "PF bank name, IFSC, and account are saved separately from the salary bank."
+      ],
+      "todo": [
+        "Pick the shift from the shift master. It is free text today.",
+        "Category, pay cadre, worker type, state for PT, probation date, nationality, and last education.",
+        "A reference contact.",
+        "When the company's PT-by-employee-state switch is on, use the employee's state. The engine uses the company state today.",
+        "Leave out Gujarati or non-Gujarati, caste type, WHRS, head code and name, IT location, and language unless the owner needs them."
+      ]
+    },
+    {
+      "id": "S-011",
+      "title": "Nominees",
+      "phaseId": "P7",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["S-008"],
+      "tests": [],
+      "page": {
+        "group": "Master",
+        "order": 11,
+        "path": "/Employee/NomineeDtl"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Nominees have name, birth date, percentage, and relation. A family list is on the same page, but its columns were not in the markup.",
+      "done": [
+        "One nominee (name, relation, percentage, birth date) is stored as four flat fields on the employee."
+      ],
+      "todo": [
+        "A nominee list per employee with add, edit, and delete. The flat fields hold only one nominee.",
+        "Add Aadhaar, occupation, residing, sex, blood group, and education.",
+        "Warn when nominee percentages do not total 100."
+      ]
+    },
+    {
+      "id": "S-012",
+      "title": "Documents",
+      "phaseId": "P7",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["S-008", "T-216"],
+      "tests": [],
+      "page": {
+        "group": "Master",
+        "order": 12,
+        "path": "/Employee/DocumentDtl"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Documents are an upload with type, number, name on the document, and remark, plus edit and delete.",
+      "done": [
+        "A document record (type, number, name on the document) can be added and is listed on the employee.",
+        "No file is uploaded. The file name is saved blank."
+      ],
+      "todo": [
+        "Upload and download a file through T-216.",
+        "Add a remark, and edit and delete a row with an audit entry.",
+        "Keep document numbers out of logs."
+      ]
+    },
+    {
+      "id": "S-046",
+      "title": "Transfer employee",
+      "phaseId": "P7",
+      "areaId": "backend",
+      "priority": "P2",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-211", "T-213", "T-032", "S-008"],
+      "tests": [],
+      "page": {
+        "group": "Control panel",
+        "order": 46,
+        "path": "/TransferEmployee/Create"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Transfer Employee asks for code, name, transfer company, transfer date, and month. It was not submitted.",
+      "done": [
+        "The reference fields are recorded in docs/munshipay-analysis.md. No screen exists."
+      ],
+      "todo": [
+        "Move an employee to another company on a date, for a month. Require membership in both companies.",
+        "Never rewrite a locked run. Write an audit entry in both companies.",
+        "Decide what travels with the employee after T-211 shows the effect."
+      ]
+    },
+    {
+      "id": "S-047",
+      "title": "Merge employee code",
+      "phaseId": "P7",
+      "areaId": "backend",
+      "priority": "P2",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-211", "T-213", "S-008"],
+      "tests": [],
+      "page": {
+        "group": "Control panel",
+        "order": 47,
+        "path": "/MergeCode/Create"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Merge Employee Code asks for the current code, a new code, a merge date, a type, and a month-year. It was not submitted.",
+      "done": [
+        "The reference fields are recorded in docs/munshipay-analysis.md. No screen exists."
+      ],
+      "todo": [
+        "Replace an employee code with a new one on a merge date, with the month and type.",
+        "Refuse a new code that already exists, keep history attached, and write an audit entry."
+      ]
+    },
+    {
+      "id": "S-010",
+      "title": "Employee salary history",
+      "phaseId": "P8",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["S-008"],
+      "tests": [],
+      "page": {
+        "group": "Master",
+        "order": 10,
+        "path": "/Employee/SalaryDtl"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Salary history stores category, as-on date, gross, CTC, earning heads, employer contributions, and take-home. The split formula was not shown.",
+      "done": [
+        "A dated salary row (as-on date, category, gross or daily rate, optional CTC) can be added and is listed with gross and CTC.",
+        "Payroll uses the row with the latest as-on date on or before the month end."
+      ],
+      "todo": [
+        "Edit and delete a row with an audit entry, refused when a locked run used it.",
+        "Show category and the computed take-home of the latest row, labeled as calculated."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-217",
+      "title": "Confirm salary breakup and attendance pay rules",
+      "phaseId": "P8",
+      "areaId": "payroll-engine",
+      "priority": "P0",
+      "status": "HUMAN_REVIEW",
+      "modelId": "claude-opus",
+      "dependencies": ["T-002"],
+      "humanReview": {
+        "why": "The reference shows percents and amounts for salary heads and counts for attendance, but not how they are derived. DEC-004 forbids guessing.",
+        "unknown": "How Gross and CTC split into Con. Basic, DA, HRA, Medical, Conveyance, Edu, Uniform, Special, LTA, and Other. What Fix means. How Set Percentage and Rate Change feed the split. Whether the gross or CTC flag changes the calculation (the engine ignores it today). How paid days, week off, public holiday, comp off, and on duty change pay. How a joiner or leaver in the month is paid.",
+        "action": "Give the rule for each, or confirm that amounts keep being entered by hand.",
+        "after": "Build T-071 and T-230, set the muster pay rules, and add a test for each rule."
+      }
+    },
+    {
+      "id": "S-015",
+      "title": "Set percentage",
+      "phaseId": "P8",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "output": "Set percentage page at /app/percentages with separate Gross and CTC lists, add, edit, and guarded delete",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-202"],
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "11 passed in src/server/categories.test.ts: percent parsing table, basic plus DA at 100 and 100.01, name rules, unchanged store after a refusal, edit keeps the list, other-company category refused, delete refused while salary rows use it, locked month unchanged by an edit",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled /app/percentages and typecheck passed",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Responsive",
+          "status": "PASS",
+          "result": "At 406px the page has no horizontal overflow. Refused save keeps the typed values, add, delete confirmation, and edit prefill worked in the browser",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Master",
+        "order": 15,
+        "path": "/SETPercentage/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Set Percentage has separate Gross and CTC lists: category, basic, DA, PF, ESI, and leave percents.",
+      "done": [
+        "A category stores a name, a gross or CTC flag, a basic percent, and a DA percent. Salary rows pick a category, and the remainder of gross is stored as Other.",
+        "Separate Gross and CTC lists at Set percentage, each with edit and delete. A category cannot move between lists.",
+        "Basic plus DA above 100 is refused, a repeated name in the same list is refused, and a category used by a salary row cannot be deleted. Delete asks for a named confirmation.",
+        "Add, edit, and delete write an audit entry and are scoped to the active company. Locked months keep their stored lines when percents change.",
+        "PF, ESI, and leave percent columns stay with T-071. What the CTC flag does stays with T-217."
+      ],
+      "todo": []
+    },
+    {
+      "tests": [],
+      "id": "T-071",
+      "title": "Configurable earning and deduction heads",
+      "phaseId": "P8",
+      "areaId": "payroll-engine",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-opus",
+      "dependencies": ["T-217", "T-212", "S-015"],
+      "description": "The company profile has twelve allowance heads, four deduction heads, and checkboxes that choose which heads form the PF and ESI base. Our engine has fixed basic, DA, and other.",
+      "done": [
+        "The engine splits gross into basic, DA, and other, and basic plus DA plus other always equals gross (engine tests)."
+      ],
+      "todo": [
+        "Company-level earning heads (up to 12) and deduction heads (up to 4) with names.",
+        "PF and ESI wage-base selection per head, plus the pay-scale, leave-method, bonus, and overtime settings once T-211 and T-217 give their options.",
+        "PF, ESI, and leave percent columns on categories.",
+        "Tests that heads sum to gross and that a removed head cannot break a locked run."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-230",
+      "title": "Break an employee's salary into the configured heads",
+      "phaseId": "P8",
+      "areaId": "payroll-engine",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-opus",
+      "dependencies": ["S-010", "T-071", "T-217"],
+      "description": "The reference Salary tab shows each head with type, percent, amount, and a fixed flag, then employer PF, ESI, gratuity, bonus, and leave, then employee PF, ESI, PT, and take-home. The split formula is not visible.",
+      "done": [],
+      "todo": [
+        "Store each head per salary row with type, percent, amount, and fixed flag.",
+        "Compute the split from the rule confirmed in T-217 and keep the parts equal to gross.",
+        "Show employer-side contributions and take-home once T-081 supplies them.",
+        "Tests for split identity and rounding."
+      ]
+    },
+    {
+      "id": "S-023",
+      "title": "Rate change",
+      "phaseId": "P8",
+      "areaId": "backend",
+      "priority": "P2",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-217", "S-010", "T-071"],
+      "tests": [],
+      "page": {
+        "group": "Master",
+        "order": 23,
+        "path": "/RateChange/Create"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Rate Change is a bulk change of allowance amounts for selected companies. It is not the employee salary-history screen.",
+      "done": [
+        "An employee's own increment is a dated salary row. Bulk rate change is not built."
+      ],
+      "todo": [
+        "An as-on date and a current and a new amount for each configured head.",
+        "A company picker limited to the companies the user belongs to.",
+        "Preview the rows that change before writing, and write one audit entry per company."
+      ]
+    },
+    {
+      "id": "S-018",
+      "title": "Holiday entry",
+      "phaseId": "P9",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "REVIEW",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-202"],
+      "startedAt": "2026-10-07",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "7 passed in holidays tests: add with year and audit, invalid and duplicate refused, same date in two companies, delete scoped to company, search by year and text, muster count per month, legacy year backfill",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled /app/holidays, /app/muster, and /app/masters",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Master",
+        "order": 18,
+        "path": "/HolidayMaster/Create"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Holiday Entry requires a date and a year, with an optional description, plus search and delete.",
+      "output": "Holiday entry moved to /app/holidays with src/server/holidays.ts. Add requires a valid date and a four-digit year, refuses a duplicate date in the company, and writes an audit entry. Delete is confirmed and audited. The list filters by year and by text. The muster page starts public holiday at the number of listed dates in the month for rows not yet saved. The year is stored as typed and not checked against the date, because the reference does not show whether it is the calendar or financial year. Held in review: the desktop and phone browser check was not run.",
+      "done": [
+        "A holiday can be saved with a date and a description and is listed.",
+        "Year field, search by year and text, and delete with confirmation and audit.",
+        "Muster public-holiday days start from the listed dates in the month until a row is saved."
+      ],
+      "todo": [
+        "Check the holiday page and the muster prefill at a phone width and a desktop width."
+      ]
+    },
+    {
+      "id": "S-024",
+      "title": "Shift master",
+      "phaseId": "P9",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "output": "Shift master page at /app/shifts with all reference columns, edit, guarded delete, and a shift picker on the employee Other tab",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-202"],
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "12 passed in src/server/shifts.test.ts: hours table, time format and pair rules, name rules, unchanged store after a refusal, per-company names, rename moves employees, delete refused while used, other-company shift refused, older records without the new fields, listed-shift check",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled /app/shifts and typecheck passed",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Responsive",
+          "status": "PASS",
+          "result": "At 406px /app/shifts has no horizontal overflow. In the browser an incomplete time pair was refused with the input kept, add worked, an older shift opened for edit, a rename moved six employees, and the Other tab showed the shift picker",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Time management",
+        "order": 24,
+        "path": "/ShiftMaster/Index_ShiftMaster"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Shift Master lists shift name, two in and out times, hours, night-off, and night-duty punch. Create was unauthorized.",
+      "done": [
+        "A shift can be saved with name, in time, out time, and hours, and is listed.",
+        "Shift master has its own page with every reference column: two in and out pairs, total, present, and half-day hours, night-off shift, and night-duty punch. A shift may end after midnight.",
+        "Times must be HH:MM and come in complete pairs, hours are 0 to 24, and a repeated or blank name is refused. The form keeps what was typed.",
+        "Edit and delete: renaming moves the employees on that shift, and delete is refused while an employee uses it. Add, edit, and delete write an audit entry, are scoped to the active company, and follow the add, edit, and delete rights.",
+        "The employee Other tab picks a shift from the list, and the server refuses one that is not listed. Night-off shift and night-duty punch are recorded as typed, and the muster and payroll do not read any shift field. Their meaning waits on T-211."
+      ],
+      "todo": []
+    },
+    {
+      "id": "S-025",
+      "title": "Monthly muster",
+      "phaseId": "P9",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-211", "T-217", "T-218"],
+      "tests": [],
+      "page": {
+        "group": "Time management",
+        "order": 25,
+        "path": "/MusterNew/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Monthly Muster is the attendance screen. Columns include days 1–31, PDay, Woff, PH, Coff, and Od. Day-cell codes were not opened.",
+      "done": [
+        "Per employee and month: paid days, week off, public holiday, comp off, and on duty are saved, and per-day wages use paid days.",
+        "The page lists every employee of the company for the header month."
+      ],
+      "todo": [
+        "Day cells 1 to 31 with PDay, Woff, PH, Coff, and Od totals. Codes come from T-211 and their pay effect from T-217.",
+        "Search by code and name, delete, delete all, and export.",
+        "Add data for all employees, and add data as per salary entry."
+      ]
+    },
+    {
+      "id": "S-026",
+      "title": "Loan entry",
+      "phaseId": "P9",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-202"],
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "5 passed in loan tests: add edit delete audit without amounts, validation, company and viewer rights, lock posts the installment until the balance is zero, unlock restores it, a posted loan cannot be deleted",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Deduction and loan",
+        "order": 26,
+        "path": "/Loan/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. The loan list shows date, employee, amount, installment, cash received, installments paid, and balance. Create was unauthorized.",
+      "output": "The loan list shows date, code, name, amount, installment, cash received, installments paid, and balance. Edit and delete are company-scoped, a viewer cannot use them, and the audit omits amounts. A posted loan cannot be deleted. Locking posts that month's installment and unlocking reverses it (DEC-014). Checked at 1440, 390, and 320: no page overflow, and the phone list stacks each loan.",
+      "done": [
+        "A loan stores employee, date, amount, monthly installment, and cash received. The list shows employee, amount, installment, and balance.",
+        "Process salary deducts the smaller of the installment and the balance.",
+        "The list also shows date, code, cash received, and installments paid.",
+        "A loan can be edited and deleted. Delete is refused after an installment has been posted.",
+        "Paid installments and the balance change when the month is locked, and return when it is unlocked."
+      ],
+      "todo": []
+    },
+    {
+      "id": "S-027",
+      "title": "Deduction entry",
+      "phaseId": "P9",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "REVIEW",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-202"],
+      "startedAt": "2026-10-07",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "9 passed in deductions tests: paise parsing, listed types, add with audit that omits amount, invalid input refused, edit and delete with audit, locked month refuses edit, delete, and add then allows after unlock, company scope, month and type filter, processing uses edited and deleted rows",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled /app/deductions",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Deduction and loan",
+        "order": 27,
+        "path": "/Deductionhead/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Deduction Entry filters by month-year and type. Create was unauthorized. Quick Entry later names Conven, Other, IT, Loan, Adv, Food, Ebill, and Oth_D.",
+      "output": "src/server/deductions.ts adds, edits, and deletes deductions with audit entries that omit amounts. Types come from the Quick Entry list and are labels only. Amounts parse from text to paise and must be above zero. Edit and delete refuse a locked month. Deduction entry filters by month and type, lists month, year, employee code and name, type, and amount with a total, and keeps typed input after a refused save. New deductions still go to the header month because the reference Create screen was not visible. Older free-text types are shown as not in the list and must be changed to a listed type when edited. Held in review: the desktop and phone browser check was not run.",
+      "done": [
+        "A deduction (free-text type, amount) is saved for the header month, listed with employee, type, and amount, and added to other deductions at processing.",
+        "Filter by month-year and type, and show month, year, and code.",
+        "Edit and delete a deduction, refused for a locked month, with audit entries.",
+        "The type is picked from Conven, Other, IT, Loan, Adv, Food, Ebill, and Oth_D. The names are labels only."
+      ],
+      "todo": [
+        "Check the deduction list, filter, edit, and delete at a phone width and a desktop width."
+      ]
+    },
+    {
+      "id": "S-034",
+      "title": "Leave policy",
+      "phaseId": "P9",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "output": "Leave policy page at /app/leave-policy that lists, adds, edits, and deletes policies by pay cadre, leave name, duration, and ratio",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-202"],
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "11 passed in src/server/leavePolicy.test.ts: required cadre and name, field length, duplicate cadre and name pair per company, unchanged store after a refusal, per-company policies, rename cascades to balances and encashments, no cascade when another policy shares the name, delete refused while records use the name, delete allowed when a sibling policy keeps the name, other-company policy refused, audit entries",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled /app/leave and /app/leave-policy and typecheck passed",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Responsive",
+          "status": "PASS",
+          "result": "At 406px /app/leave-policy has no horizontal overflow. In the browser a duplicate cadre and name pair was refused with the input kept, a Worker policy was added, the seeded Staff policy opened prefilled, and renaming it moved the leave register row to the new name. The in-use policy showed no delete link, and the nav highlighted only Leave policy",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Leave",
+        "order": 34,
+        "path": "/LeavePolicy/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Leave Policy lists pay cadre, leave name, duration, and ratio. Create was denied.",
+      "done": [
+        "A policy (cadre, leave name, duration, ratio) can be saved behind the add right.",
+        "Leave policy has its own page that lists every policy for the active company with pay cadre, leave name, duration, and ratio. The save form moved off the leave page.",
+        "Pay cadre and leave name are required, each field is limited to 40 characters, and a repeated cadre and name pair is refused. The form keeps what was typed.",
+        "Edit and delete: renaming the only policy for a leave name also renames it on balances and encashments. Delete is refused while a balance or encashment uses the name, unless another policy keeps that name. Add, edit, and delete write an audit entry, are scoped to the active company, and follow the leave rights.",
+        "Duration and ratio are recorded as typed. Nothing reads them, and accrual stays unconfirmed (T-211)."
+      ],
+      "todo": []
+    },
+    {
+      "id": "S-035",
+      "title": "Leave register and carry forward",
+      "phaseId": "P9",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "REVIEW",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-202"],
+      "startedAt": "2026-10-07",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "9 passed in leaveRegister tests: day parsing, policy leave names, add as typed with audit, invalid, unlisted, and duplicate rows refused, edit and delete scoped to company with audit, carry forward safe to repeat, never overwrites and reports a changed balance, adds only missing rows within the company, register grouping with repeats and unlisted names",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled /app/leave",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Leave",
+        "order": 35,
+        "path": "/LeaveOpening/Create"
+      },
+      "output": "src/server/leaveRegister.ts adds, edits, and deletes register rows with audit entries, one row per employee, year, and policy leave name. Days are typed with up to two decimals and the balance is not derived. Carry forward goes from a year to the next, creates only missing rows, never overwrites, and reports rows whose brought forward no longer matches. Leave register shows one line per employee for the year with a brought forward, this year, and balance group per policy leave name, flags repeated rows from older carry forwards and names not in the policy, and opens an employee's rows for edit and delete. Column groups use policy names because the reference's six bucket names wait on T-211. Encashment stays on the page unchanged for S-037. Held in review: the desktop and phone browser check was not run.",
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. The leave register shows year, code, name, and six groups of brought-forward, year, and balance. Leave Carry Forward shows the current year, the next year, and the same six groups, with no separate create. They are one task here.",
+      "done": [
+        "A balance row (employee, year, leave name, brought forward, this year, balance) can be saved and listed. The balance is typed, not accrued.",
+        "Carry forward copies each balance of one year into the next year as brought forward.",
+        "Carry forward is safe to repeat. Existing next-year rows are skipped and reported, never overwritten.",
+        "The register shows one line per employee for the year with one column group per policy leave name.",
+        "Edit and delete a row, with audit entries."
+      ],
+      "todo": [
+        "Check the register grid, employee rows, edit, delete, and carry forward at a phone width and a desktop width.",
+        "Rename the column groups to the reference's six bucket names once T-211 shows them."
+      ]
+    },
+    {
+      "id": "S-037",
+      "title": "Leave encashment",
+      "phaseId": "P9",
+      "areaId": "frontend",
+      "priority": "P2",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["S-035"],
+      "tests": [],
+      "page": {
+        "group": "Leave",
+        "order": 37,
+        "path": "/LeaveEncash/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Leave Encashment lists slip number, year, strength, leave name, amount, used leave, cash leave, and brought-forward leave. The create form was not opened.",
+      "done": [
+        "An encashment (employee, year, leave name, amount, used days, cashed days) can be saved and is listed with employee, leave name, and amount."
+      ],
+      "todo": [
+        "A list with slip number, year, strength, leave name, amount, used leave, cash leave, and brought-forward leave, filtered by year and date.",
+        "Edit and delete an encashment."
+      ]
+    },
+    {
+      "id": "T-080",
+      "title": "Test the money helpers and record the rounding policy",
+      "phaseId": "P10",
+      "areaId": "payroll-engine",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-200"],
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "output": "DEC-016 records the rule: a percent is 0 to 100 with at most two decimals, percentOf multiplies in integer hundredths and rounds half away from zero to the paisa, and anything it cannot apply exactly is refused. The old float formula rounded 1.15 percent of 3000 paise to 34; the integer rule gives 35. parsePercentText is the shared parser, including categories. Forms parse rupees with parseRupeeText and show an error instead of saving zero. Salary-entry adjustments display with plainRupees so the field round-trips. Review: no statutory formula was added, invalid company, salary, line, and encashment values were refused in the browser and left the store unchanged, and a negative amount that rounds to nothing stays 0.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "5 passed in money tests: half-away-from-zero cases including negatives and no negative zero, the 1.15 percent and 1.005 float traps, refusal of out-of-range, three-decimal, non-finite, fractional, and oversized inputs, rupee and percent text parsing, plainRupees round trip, and Indian grouping. Category percent table and engine tests pass unchanged.",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "UI",
+          "status": "PASS",
+          "result": "On a throwaway store, PF percent 101, PF limit 12.345, gross 12.345, earning adjustment 1.005, and encashment -1 each showed the field error and saved nothing.",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "done": [
+        "percentOf and rupeesToPaise keep money as integer paise, and the engine tests cover the split, the PF cap, and per-day gross.",
+        "Unit tests cover every money helper.",
+        "Rupee text is parsed to paise without floating point everywhere a form takes money.",
+        "Negative, non-numeric, and out-of-range percents are refused, and the rounding rule is DEC-016.",
+        "Invalid PF percent, PF limit, gross, line adjustment, and encashment amount each show an error and save nothing."
+      ],
+      "todo": []
+    },
+    {
+      "id": "T-210",
+      "title": "Confirm statutory contribution rules",
+      "phaseId": "P10",
+      "areaId": "payroll-engine",
+      "priority": "P0",
+      "status": "HUMAN_REVIEW",
+      "modelId": "claude-opus",
+      "dependencies": ["T-200"],
+      "humanReview": {
+        "why": "The reference screens show PF, ESI, and PT labels without the contribution formula.",
+        "unknown": "Employee and employer percents, wage ceilings, which earning heads form each base, which PT slab wins when ranges overlap, and whether bonus, gratuity, overtime, and income tax (TDS and Form 16) are in scope.",
+        "action": "Confirm the rules to encode, or keep entering percents and slabs per company.",
+        "after": "Add jurisdiction tests, calculate those amounts from the confirmed rules, and scope the PF, ESI, PT, and income-tax reports."
+      },
+      "tests": []
+    },
+    {
+      "tests": [],
+      "id": "T-081",
+      "title": "Calculate PF, ESI, and PT from the confirmed rules",
+      "phaseId": "P10",
+      "areaId": "payroll-engine",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-opus",
+      "dependencies": ["T-210", "T-080", "T-071"],
+      "description": "Replaces the old gross-to-net pipeline task. The pipeline from gross to net exists. What remains is the statutory part, which waits for T-210.",
+      "done": [
+        "PF and ESI employee amounts use a percent typed on the company. Blank means zero. The PF base follows the EPF mode and an optional cap.",
+        "PT comes from the stored slabs. Seven engine tests cover these paths."
+      ],
+      "todo": [
+        "Replace typed percents with the confirmed rules and add a test per rule (DEC-004).",
+        "Employer-side PF and ESI contributions and the PF account splits.",
+        "ESI wage base from the selected heads and the ESI ceiling rule.",
+        "PT slab selection by as-on date and overlap rule.",
+        "Bonus, gratuity, overtime, and income tax only if T-210 brings them in scope."
+      ]
+    },
+    {
+      "id": "S-029",
+      "title": "Process salary",
+      "phaseId": "P11",
+      "areaId": "frontend",
+      "priority": "P0",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-201", "T-218"],
+      "tests": [],
+      "page": {
+        "group": "Transaction",
+        "order": 29,
+        "path": "/SalaryProcess/SalaryProcess"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Process Salary searches a month, lists exceptions, and was not submitted. Exceptions shown were Empty Salary Rate, Left Employee, Empty Salary Category, and ESI Salary > 21000.",
+      "done": [
+        "A month can be processed again. Lines are recalculated and earning and deduction adjustments are kept. A locked month cannot be processed.",
+        "Exceptions: no salary rate, no category, left employee (blocks pay), and ESI wage above the company's configured limit (21,000 rupees by default).",
+        "Each exception links to the employee record that fixes it, and the payable net total is shown."
+      ],
+      "todo": [
+        "Show the result grid on this screen: year, month, code, name, basic, DA, gross, PF, ESI, PT, gross deduction, and net. It is on Salary entry and the register today.",
+        "Show the four exception lists with the same amount columns.",
+        "Skip employees whose join date is after the month. Every employee of the company is processed today.",
+        "Delete all processed lines for an open month, and export this data.",
+        "Add the IT column only if T-210 brings income tax in scope."
+      ]
+    },
+    {
+      "id": "S-030",
+      "title": "Salary entry",
+      "phaseId": "P11",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["S-029"],
+      "tests": [],
+      "page": {
+        "group": "Transaction",
+        "order": 30,
+        "path": "/SalaryEntry/SalaryEntryList"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Salary Entry lists the processed lines for a month. The edit form was not opened.",
+      "done": [
+        "Processed lines are listed with gross, deductions, and net. An earning or deduction adjustment recalculates net, and a locked month rejects it."
+      ],
+      "todo": [
+        "Show code, basic, DA, PF, ESI, and PT per line.",
+        "Delete a line and delete all lines of the month."
+      ]
+    },
+    {
+      "id": "S-028",
+      "title": "Salary summary",
+      "phaseId": "P11",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["S-029"],
+      "tests": [],
+      "page": {
+        "group": "Transaction",
+        "order": 28,
+        "path": "/Transaction/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Salary Summary filters by accounting year and totals strength, earnings, deductions, and net by month.",
+      "done": [
+        "A one-month summary lists strength, basic, DA, other earnings, gross, PF, ESI, PT, other deductions, loan, deductions, and net for the header month."
+      ],
+      "todo": [
+        "An accounting-year filter with one row per month, as the reference table does.",
+        "Show an unprocessed month as empty, not zero, and add export."
+      ]
+    },
+    {
+      "id": "S-044",
+      "title": "Data lock",
+      "phaseId": "P11",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-218", "S-029"],
+      "tests": [],
+      "page": {
+        "group": "Control panel",
+        "order": 44,
+        "path": "/DataLock/Index_DataLock"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Data Lock is titled Salary-Attendance Lock/Unlock. It filters by type and month-year. Lock and unlock were not submitted.",
+      "done": [
+        "The header month can be locked and unlocked after typing LOCK or UNLOCK. A locked month cannot be processed or edited in salary entry. Both actions are audited."
+      ],
+      "todo": [
+        "A list of lock type, month, year, and status for every month.",
+        "Lock or unlock any month, not only the header month."
+      ]
+    },
+    {
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "8 passed in payroll tests: locked month rejects muster and deduction writes and leaves them unchanged, both accepted after unlock, next month stays open, another company's employee rejected",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled /app/muster and /app/deductions",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "id": "T-218",
+      "title": "Enforce the period lock on muster and deduction edits",
+      "phaseId": "P11",
+      "areaId": "backend",
+      "priority": "P0",
+      "status": "DONE",
+      "modelId": "claude-opus",
+      "dependencies": ["T-201"],
+      "description": "The Locks page says locking freezes the muster, but only process salary and salary-line edits check the lock.",
+      "output": "recordMuster and recordDeduction share the lock check with process salary and salary entry. Muster and deduction pages state the lock and disable the form. Typecheck passes with PF bank fields on the employee seed.",
+      "done": [
+        "Process salary and salary-line edits reject a locked month (payroll tests).",
+        "Muster saves and deduction adds reject a locked month and are accepted after unlock (payroll tests).",
+        "Muster and deductions pages show the lock and disable their forms.",
+        "Project typecheck passes."
+      ],
+      "todo": [],
+      "startedAt": "2026-10-07"
+    },
+    {
+      "id": "T-219",
+      "title": "Post loan installments when a month is locked",
+      "phaseId": "P11",
+      "areaId": "backend",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-201", "S-026"],
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "Lock posts each company loan until the balance is zero and the next month deducts nothing. Unlock restores that month only. Audit lines name the month and omit amounts.",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "description": "The loan balance is amount minus cash received, and nothing updates cash received after a month is processed. The same installment is deducted every month and the balance never reaches zero.",
+      "output": "Lock adds the month's installment to cash received and the paid count, once, for this company only. Unlock removes that posting. A loan reaches zero and the next month deducts nothing. DEC-014.",
+      "done": [
+        "The deduction at processing is the smaller of the installment and the remaining balance.",
+        "On lock, add each loan deduction to the loan's received amount and paid-installment count. On unlock, reverse it. Write both to the audit log.",
+        "Tests: a loan reaches zero and stops deducting, and unlock restores the balance."
+      ],
+      "todo": []
+    },
+    {
+      "id": "S-032",
+      "title": "F&F settlement",
+      "phaseId": "P11",
+      "areaId": "backend",
+      "priority": "P2",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-211", "T-219", "S-029"],
+      "tests": [],
+      "page": {
+        "group": "Transaction",
+        "order": 32,
+        "path": "/FullAndFinal/FullAndFinalList"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Full and final lists month, year, code, name, amount, and status. The worksheet was not opened.",
+      "done": [
+        "A full-and-final report lists employees who have a left date, with the reason. It is not a settlement."
+      ],
+      "todo": [
+        "A settlement list with month, year, code, name, amount, and status, a date filter, select, and export.",
+        "A worksheet built from the layout captured in T-211. Do not invent settlement lines."
+      ]
+    },
+    {
+      "id": "T-100",
+      "title": "Salary slip",
+      "phaseId": "P12",
+      "areaId": "reports",
+      "priority": "P1",
+      "status": "REVIEW",
+      "startedAt": "2026-10-07",
+      "output": "Salary slip with company, employee, payment, and paid-days details, an A4 print layout, and print of all or chosen slips",
+      "modelId": "claude-sonnet",
+      "dependencies": ["T-201"],
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "11 passed in src/server/slips.test.ts: company, employee, payment, paid days, and month on the slip; earnings before deductions matching the saved totals; a labeled adjustment row with totals still matching; read from the saved line; blank paid days; payment labels; no slip for an unpayable line, an unprocessed month, or another company; run order; all or chosen slips; selection trimmed, de-duplicated, and capped; store unchanged",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled /app/payroll/slips, /app/payroll/slips/[employeeId], and /app/payroll/slips/print. Typecheck and biome passed",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Responsive",
+          "status": "PASS",
+          "result": "At 406px the slip has no horizontal overflow and shows its facts in one column. In the browser, ticking two employees printed two slips, Print all printed three, a repeated, unknown, unpayable, or other-company id was dropped, and no choice showed a prompt. With print media emulated the menu, top bar, and page controls were hidden and the slip showed in two columns on a white page. Only the Salary slips menu item is marked current on the slip pages",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "description": "A slip page exists for a payable line of the header month. It is a bare table of amounts.",
+      "done": [
+        "A slips list and a slip page show basic, DA, other earnings, gross, PF, ESI, PT, other deductions, loan, total deductions, and net, with the data-origin line.",
+        "The slip shows the company name and state, month, employee code, name, designation, department, payment method, and paid days from the month's muster. Earnings come before deductions, and a typed adjustment has its own labeled row. Bank account numbers are not printed.",
+        "An A4 print layout puts one slip on each page and hides the menu and controls. Print or save as PDF opens the browser print dialog, which saves a PDF.",
+        "Salary slips lists payable employees with a tick box for each. Print selected slips prints the ticked ones, and Print all slips prints everyone for the month. Slips need the payroll view right.",
+        "A slip is read from the saved payroll line and is never recalculated."
+      ],
+      "todo": [
+        "A server-made PDF file. It needs a PDF library and an embedded font so Indian-language names print correctly, which is an architecture decision.",
+        "Company address on the slip, once the company profile stores one. Only the name and state are stored today.",
+        "A slip style. The reference style values were not captured.",
+        "Read employee details from the locked run snapshot after T-215. Until then a later edit to designation, department, or payment method shows on an older slip."
+      ]
+    },
+    {
+      "id": "S-039",
+      "title": "Report list and report framework",
+      "phaseId": "P12",
+      "areaId": "reports",
+      "priority": "P1",
+      "status": "DONE",
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "output": "Report catalog grouped as the reference, each report with its own rows, status, and CSV, plus month and payment date filters on the salary register",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-201"],
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "16 passed in src/server/reports.test.ts: ten reports in reference groups, row and column counts match, only payable lines, per-company rows, per-report columns, no pay rows for an unprocessed month, run status, muster and leave and leaver rows, IT declaration has nothing to list, CSV equals the screen rows in plain rupees, CSV differs per report, formula and quote escaping, store unchanged, exact plain rupees, month and date validation",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build compiled /app/reports, /app/reports/[slug], and /app/export. Typecheck, biome, and npm test (146) passed",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Responsive",
+          "status": "PASS",
+          "result": "At 406px /app/reports has no horizontal overflow. In the browser the catalog showed six groups with status, row count, and Demo origin per report. After processing October the register listed three payable lines and every download matched its report. A September filter showed the empty state, a bad month or payment date was refused with a message, the IT declaration had no download, and an unknown kind or slug returned 400 or 404",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Report",
+        "order": 39,
+        "path": "/ReportList/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Reports are grouped. Salary register and salary slip were opened far enough to read their filters. Preview layouts and most other reports were not captured.",
+      "done": [
+        "A catalog of ten reports: salary register, salary slip, payment, PF register, ESI register, PT summary, attendance, leave detail, full and final, and IT declaration. Each previews the header month.",
+        "The salary register shows code, name, basic, DA, gross, PF, ESI, PT, deductions, and net.",
+        "The catalog is grouped as the reference list: Salary, Provident fund, ESI, Professional tax and income tax, General, and Attendance, bonus, gratuity. Each report shows where its rows come from, the run status for pay reports, the row count, and the data origin.",
+        "Each report has one row source shared by the screen and the download, so Download CSV exports that report's own rows. Money is plain rupees from integer paise, text that starts with a formula character is stored as text, and the IT declaration has no download because no records exist.",
+        "Reports and exports need the reports view right (payroll for the register link, employees for the employee list). An unknown kind, slug, or month is refused.",
+        "The salary register has a month filter, and every report has one, which overrides the header month for that view and its download. The payment date is shown as typed and is not used to select rows because no payment date is stored.",
+        "Pay columns on the PF, ESI, PT, and payment reports are the saved run figures only. Statutory layouts and file formats stay withheld (T-020)."
+      ],
+      "todo": [
+        "Salary register Type and Style filters. Their values were not captured from the reference, so they are not built until a pass records them."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-220",
+      "title": "Salary reports beyond the register",
+      "phaseId": "P12",
+      "areaId": "reports",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["S-039", "S-028"],
+      "description": "Form ER-1, the overtime register, and the Form VII nomination are statutory stationery and stay out until their layouts are captured.",
+      "done": ["A payment report lists gross and net for the header month."],
+      "todo": [
+        "Increment report and salary certificate.",
+        "Department-wise summary.",
+        "Employee month-wise and annual summaries, and the company annual summary.",
+        "Employee register."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-221",
+      "title": "PF reports",
+      "phaseId": "P12",
+      "areaId": "reports",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["S-039", "T-081", "T-211"],
+      "description": "Only the monthly PF outputs are planned. Forms 2, 3A, 5, 6A, 9, 10, 11, the inspection report, and the cover summary are stationery and stay out until requested.",
+      "done": ["A PF register lists gross, PF, and net for the header month."],
+      "todo": [
+        "PF challan for the month.",
+        "Company PF summary and employee PF summary.",
+        "UAN and KYC text files in the layout captured in T-211."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-222",
+      "title": "ESI reports",
+      "phaseId": "P12",
+      "areaId": "reports",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["S-039", "T-081", "T-211"],
+      "done": [
+        "An ESI register lists gross, ESI, and net for the header month."
+      ],
+      "todo": [
+        "ESI challan for the month.",
+        "Company ESI summary and employee ESI summary.",
+        "ESI covered and exempt summary."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-223",
+      "title": "Professional tax and income-tax reports",
+      "phaseId": "P12",
+      "areaId": "reports",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["S-039", "T-081", "T-211"],
+      "done": ["A PT summary lists gross, PT, and net for the header month."],
+      "todo": [
+        "PT statement for the year and the PT challan.",
+        "Form 16 and the IT declaration form only if T-210 brings income tax in scope. The reference IT Master page was missing, so no declaration data exists."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-224",
+      "title": "Workforce, attendance, and leave reports",
+      "phaseId": "P12",
+      "areaId": "reports",
+      "priority": "P2",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["S-039", "S-008", "S-025", "S-035"],
+      "done": [
+        "An attendance summary lists paid days, a leave detail lists balances, and a full-and-final report lists leavers."
+      ],
+      "todo": [
+        "Employee information and employee register.",
+        "Left and joined, and birthday reports.",
+        "Attendance summary for the year, and the muster roll.",
+        "Leave encashment and leave register reports."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-225",
+      "title": "Email payslips",
+      "phaseId": "P12",
+      "areaId": "backend",
+      "priority": "P2",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["T-100", "T-212"],
+      "description": "The reference has Salary Slip (Direct Mail) and a company salary-slip email detail. Needs a mail provider key in an untracked .env when it is tested.",
+      "done": [],
+      "todo": [
+        "Send a slip to each employee's email after the month is locked, using the company's sender details.",
+        "Show sent, failed, and skipped (no email) per employee, and never put pay figures in logs."
+      ]
+    },
+    {
+      "id": "S-004",
+      "title": "Dashboard",
+      "phaseId": "P12",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-201", "T-202"],
+      "expectedCompletion": "2026-10-07",
+      "output": "Pending-data counts and 30-day events on the dashboard, each opening the employee list for the active company. S-006 is still open for columns, page sizes, an active or left filter, and delete. The list route from T-202 was enough to add and test these filters. PF bank is stored as name, IFSC, and account. Review: counts stay inside the company, blank fields count as missing, and the dashboard does not show government identifiers.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "2 passed: pending counts skip other companies, leavers, and filled fields; events use a 30-day window including year-end and 29 February",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Home",
+        "order": 4,
+        "path": "/Home/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. The dashboard shows pending applications, active employees, company counts, the salary-process month, missing identity fields, news, and events. Pending applications and news need employee self-service and a news module, which this product does not have, so they are left out.",
+      "done": [
+        "The dashboard shows the active company, employee counts, the process month, run status, and payroll exceptions.",
+        "Gross, deductions, and net appear only after that month is processed.",
+        "Panels for attendance, leave, loans and deductions, department salary, salary distribution, and recent payroll activity read stored records.",
+        "Pending-data counts for missing Aadhaar, UAN, PAN, mobile, birth date, join date, PF bank, and salary bank. Each opens the employee list filtered to those people.",
+        "Events: today's and upcoming birthdays, new joinings, and leavers, each opening a list."
+      ],
+      "todo": [],
+      "startedAt": "2026-10-07"
+    },
+    {
+      "id": "S-013",
+      "title": "Import Excel: upload, preview, and rejection report",
+      "phaseId": "P13",
+      "areaId": "backend",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "cursor-grok",
+      "dependencies": ["T-202"],
+      "expectedCompletion": "2026-10-07",
+      "output": "Shared .xlsx import: sample download, preview of accepted and rejected rows, and a save that writes every row or none for the active company with one audit entry. Wrong type and files over 1 MB are refused. Leave flow is omitted. Saved rows do not create employees, rates, or attendance yet. ExcelJS is installed for workbook read and write.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "3 passed: wrong file and leave flow refused, rejected rows block save, accepted rows save for one company with one audit entry",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Master",
+        "order": 13,
+        "path": "/ImportData/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Import Excel opens eight imports. The leave-flow import is dropped with Flow Entry. The shared framework is this task. Each remaining import is its own task.",
+      "done": [
+        "The reference imports and their paths are recorded in docs/munshipay-analysis.md.",
+        "Each import has a sample .xlsx. Upload previews accepted and rejected rows before anything is written.",
+        "Save writes every accepted row or none, for the active company, with one audit entry.",
+        "Files that are not .xlsx, or are over 1 MB, are refused."
+      ],
+      "todo": [],
+      "startedAt": "2026-10-07"
+    },
+    {
+      "tests": [],
+      "id": "T-226",
+      "title": "Import employees",
+      "phaseId": "P13",
+      "areaId": "backend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["S-013", "S-008"],
+      "done": [],
+      "todo": [
+        "Columns follow the employee profile. Code, name, and join date are required.",
+        "Reject duplicate codes in the file and in the company.",
+        "Mask Aadhaar, PAN, and bank values in the preview."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-227",
+      "title": "Import salary rates",
+      "phaseId": "P13",
+      "areaId": "backend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["S-013", "S-010"],
+      "done": [],
+      "todo": [
+        "Dated salary rows by employee code with category, gross or rate, and optional CTC.",
+        "Reject unknown codes and categories, and rows that repeat an as-on date."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-228",
+      "title": "Import monthly attendance",
+      "phaseId": "P13",
+      "areaId": "backend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["S-013", "S-025"],
+      "description": "Covers the monthly attendance import and the attendance summary with deduction import.",
+      "done": [],
+      "todo": [
+        "Paid days, week off, public holiday, comp off, and on duty per employee code for one month.",
+        "The summary variant also carries deduction amounts by type.",
+        "Reject a locked month."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-229",
+      "title": "Import deductions, nominees, and leave opening balances",
+      "phaseId": "P13",
+      "areaId": "backend",
+      "priority": "P2",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["S-013", "S-027", "S-011", "S-035"],
+      "done": [],
+      "todo": [
+        "Monthly deductions by employee code and type, rejecting a locked month.",
+        "Nominees by employee code, warning when percentages do not total 100.",
+        "Yearly leave opening balances by employee code and leave name."
+      ]
+    },
+    {
+      "id": "S-014",
+      "title": "Export Excel",
+      "phaseId": "P13",
+      "areaId": "backend",
+      "priority": "P1",
+      "status": "REVIEW",
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "modelId": "cursor-grok",
+      "dependencies": ["S-013"],
+      "output": "Export Excel at /app/exports downloads .xlsx workbooks: employee, salary rate master, month-wise salary (payable lines of the processed run), month-wise deduction, and custom employee and custom salary exports with a column picker. Salary rate and deduction exports use exactly the import columns, so a file can be edited and imported back. Amounts are rupee numbers with two decimals built from paise without floats, text is written as text so a formula is not run, and rows are sorted by code. Bank account, PAN, and Aadhaar are not offered in any export. Every download checks the session, the export right plus the view right of the screen that shows the same data, and reads only the session company. A refused download returns to the screen with the reason and keeps the chosen month and columns. The screen lists only the exports the role may download. Module: src/server/exports.ts, writer buildTableSheet in src/server/xlsx.ts, route /app/exports/download.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "9 passed in exports tests: unique slugs on real menus; no bank account, PAN, or Aadhaar column and none of those values in a full custom export; employee export limited to the company and sorted; month-wise salary has only payable lines of the company's run in paise; missing run and invalid months refused; custom columns kept in catalog order with unknown and empty choices refused; deduction export uses the import columns and the company's month; a salary rate workbook reads back and passes the salary rate import with 42500.05 exact; formula-like text stays a string cell. Architecture and import tests pass. Typecheck clean.",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "page": {
+        "group": "Master",
+        "order": 14,
+        "path": "/ExportData/Index"
+      },
+      "description": "Verified against https://munshipay.com/. The public sign-in was opened again on 2026-10-07. Screens after login are from the authorized session recorded on 2026-10-06. Branding, logos, and contact addresses are not copied. Export Excel covers employee, salary rate, month-wise salary, month-wise deduction, and two custom exports. Transfer to Mobile App is dropped: there is no mobile app and the screens were not opened.",
+      "done": [
+        "CSV downloads exist for the filtered employee list and for the payroll register of the header month.",
+        "Excel (.xlsx) exports for employee, salary rate master, month-wise salary, and month-wise deduction.",
+        "Custom employee and custom salary exports with a column picker.",
+        "Every download checks the export right, the matching screen's view right, and the session company."
+      ],
+      "todo": [
+        "In the browser, at phone and desktop widths, download each export, open it in Excel, and confirm a refused custom export keeps the chosen columns.",
+        "Rate-limit export downloads once T-031 stores per-user counters outside process memory (payroll-security)."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-110",
+      "title": "Review tenant isolation, authorization, and sensitive-data handling",
+      "phaseId": "P14",
+      "areaId": "security",
+      "priority": "P0",
+      "status": "BACKLOG",
+      "modelId": "claude-opus",
+      "dependencies": ["T-032", "T-215"],
+      "done": [
+        "Sessions are signed and httpOnly, and failed sign-ins are rate limited."
+      ],
+      "todo": [
+        "Review every query and action for company scoping, with a test for each.",
+        "Review exports, logs, and error pages for Aadhaar, PAN, bank, and salary values (DEC-007).",
+        "Review file download URLs (DEC-011) and import uploads."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-111",
+      "title": "Pass responsive and accessibility checks on built screens",
+      "phaseId": "P14",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "cursor-grok",
+      "dependencies": ["S-004", "S-008", "S-029"],
+      "done": [
+        "The shell has a phone menu, tables that stack into labeled rows, and card rows for the employee and slip lists."
+      ],
+      "todo": [
+        "Check desktop and 375px on every built screen.",
+        "Keyboard, focus order, table headings, and status shown in words as well as color."
+      ]
+    },
+    {
+      "tests": [],
+      "id": "T-112",
+      "title": "Review pagination and indexes",
+      "phaseId": "P14",
+      "areaId": "database",
+      "priority": "P1",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["T-213", "T-214"],
+      "done": ["The employee list pages at 8 rows."],
+      "todo": [
+        "Page muster, salary entry, loans, and reports on the server.",
+        "Add indexes on company id with period for runs, muster, and deductions, and on employee code per company."
+      ]
+    },
+    {
+      "id": "T-121",
+      "title": "Add the continuous integration pipeline",
+      "phaseId": "P15",
+      "areaId": "devops",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "cursor-fast",
+      "dependencies": ["T-012"],
+      "startedAt": "2026-10-07",
+      "expectedCompletion": "2026-10-07",
+      "output": "GitHub Actions runs lint, typecheck, the test suite, board:check, and the production build on every push and pull request. board:check fails the job when board/state.json and the generated files disagree. Review: the workflow uses the scripts already in package.json and does not add secrets or a deploy step.",
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "The workflow file triggers on push and pull_request and runs npm ci, lint, typecheck, test, board:check, and build.",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "done": [
+        "lint, typecheck, test, board:check, and build scripts exist.",
+        "Those scripts run on every push and pull request.",
+        "The job fails when board/state.json and the generated files disagree."
+      ],
+      "todo": []
+    },
+    {
+      "tests": [],
+      "id": "T-120",
+      "title": "Write the deployment checklist",
+      "phaseId": "P15",
+      "areaId": "devops",
+      "priority": "P2",
+      "status": "BACKLOG",
+      "modelId": "cursor-fast",
+      "dependencies": ["T-110", "T-121"],
+      "done": [],
+      "todo": [
+        "Hosting, environment variables, migrations, backups and restore, and rollback.",
+        "Secrets checklist: AUTH_SECRET, DATABASE_URL, Bunny keys, and the mail key."
+      ]
+    },
+    {
+      "id": "T-231",
+      "title": "Company owners, salary-slip email sender, and document bucket",
+      "phaseId": "P6",
+      "areaId": "frontend",
+      "priority": "P2",
+      "status": "BACKLOG",
+      "modelId": "claude-sonnet",
+      "dependencies": ["T-212"],
+      "tests": [],
+      "description": "The reference profile also has a Document Bucket tab and, per the earlier review, two owners and slip email sender details. The attachment given on 2026-10-11 shows only the Company Details tab, so the contents of these are not yet known.",
+      "done": [],
+      "todo": [
+        "Two owners with name, designation, phone, and address.",
+        "Salary-slip email sender details, used by T-225.",
+        "Document bucket: attach company documents, with type and size limits and storage outside the web root."
+      ]
+    },
+    {
+      "tests": [
+        {
+          "type": "Unit",
+          "status": "PASS",
+          "result": "263 passed, 7 new for src/domain/dashboardStats.ts. Gross, deductions and net balance on every line and reconcile() reports any that do not. PF takes the basic pay up to the PF limit (basic 20,000 against a 15,000 limit gives 1,800) and ESI takes its percent of the ESI wage (0.75% of 40,000 gives 300), both with test percents in a temporary store only. A deduction adjustment is counted once, which fixes a double count the dashboard donut had. The waterfall ends at net, department totals add up to the whole, pay bands return nothing under five people, and the insights state only facts present in the lines.",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Build",
+          "status": "PASS",
+          "result": "next build succeeded. Biome check and typecheck are clean.",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "UI",
+          "status": "PASS",
+          "result": "In a browser against a temporary copy of the store with August, September and October 2026 processed: the trend tooltip shows gross, deductions, net and the month-on-month change, legend toggles hide series, Fit to range rescales the axis with labelled ticks, choosing a month chip switches the period and every figure follows. The deduction donut highlights and drills into the people behind PF, and zero parts are disabled with a reason. Pay bands drill into the people in a band. Choosing a department from the bar chart filters every figure, and the filtered gross, deductions and net match the department lines. A month with no processed run shows an empty state in each chart, and no chart is blank or invented. No console errors.",
+          "failures": "",
+          "action": ""
+        },
+        {
+          "type": "Responsive",
+          "status": "PASS",
+          "result": "Page overflow was 0 at 320, 390, 768 and 1440. The Gross to net table drops its running total and wraps on a phone, and the trend, donut and band controls stay reachable.",
+          "failures": "",
+          "action": ""
+        }
+      ],
+      "id": "T-232",
+      "title": "Dashboard: gross to net, trend, deductions, distribution, filters, and drill-downs",
+      "phaseId": "P12",
+      "areaId": "frontend",
+      "priority": "P1",
+      "status": "DONE",
+      "modelId": "claude-sonnet",
+      "dependencies": ["S-004"],
+      "description": "Rebuilds the dashboard around real processed lines. Adds a department filter, a gross to net breakdown, a payroll trend with tooltips, a deduction donut with drill-down, a net pay distribution, a salary mix, and insights that state only what the lines show. Charts that lack data show an empty state or a plain message and never invented figures. Trends, sparklines and changes appear once a second month is processed. PF and ESI show zero until the company sets a percent (DEC-004)."
+    }
+  ],
+  "projectBlockers": []
+}

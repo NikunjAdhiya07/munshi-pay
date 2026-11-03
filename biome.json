@@ -1,0 +1,43 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "files": {
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!.next-*",
+      "!package-lock.json",
+      "!board/execution-board.html",
+      "!EXECUTION_BOARD.md",
+      "!docs/status.md",
+      "!docs/to-do.md",
+      "!docs/skill-registry.md",
+      "!.claude",
+      "!.cursor",
+      "!data"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "always",
+      "quoteStyle": "double"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "style": {
+        "noDescendingSpecificity": "off"
+      },
+      "complexity": {
+        "noImportantStyles": "off"
+      }
+    }
+  }
+}

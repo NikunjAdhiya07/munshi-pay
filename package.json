@@ -1,0 +1,30 @@
+{
+  "name": "munshipay",
+  "private": true,
+  "type": "module",
+  "description": "Payroll and salary consultancy platform",
+  "scripts": {
+    "board": "node board/generate.mjs",
+    "board:live": "node board/generate.mjs --serve",
+    "board:check": "node board/generate.mjs --check",
+    "dev": "next dev",
+    "build": "next build",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "test": "node --experimental-strip-types --test board/*.test.mjs src/domain/*.test.ts src/server/*.test.ts"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "next": "^16.3.8",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.15",
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

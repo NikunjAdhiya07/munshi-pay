@@ -1,0 +1,11 @@
+---
+description: Apply payroll UI, responsive, accessibility, and domain language rules to interface code
+globs: "**/*.{tsx,css}"
+alwaysApply: false
+---
+
+# Payroll interface
+
+When changing UI, follow `skills/payroll-ui-ux/SKILL.md`, `skills/payroll-ui-ux/tokens.md`, `skills/responsive-mobile-ux/SKILL.md`, `skills/accessibility/SKILL.md`, and `skills/payroll-domain-ux/SKILL.md`.
+
+Use the token palette and IBM Plex. Keep tables dense. Label data origin when figures are not from a persisted run. Include empty, loading, and error states. Check a phone width and a desktop width when layout changes.

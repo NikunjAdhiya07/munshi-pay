@@ -1,0 +1,14 @@
+---
+description: Keep Munshi Pay work on the execution board and inside payroll product rules
+alwaysApply: true
+---
+
+# Execution and product rules
+
+`board/state.json` is the only task source of truth. Generated files (`EXECUTION_BOARD.md`, `docs/status.md`, `docs/to-do.md`, `docs/skill-registry.md`, `board/execution-board.html`) must be regenerated with `npm run board`, not edited by hand.
+
+Before substantial work, read `EXECUTION_BOARD.md` and the skill under `skills/` that matches the task. Canonical skills are edited in `skills/` only.
+
+Money is integer minor units. Do not invent statutory payroll formulas (DEC-004). Do not commit `.env` or present mock pay as real data. A task is not done without a passing test record.
+
+Continue the next unblocked task when the current one is finished. Ask the user only for a missing secret, a destructive approval, or a business rule that cannot be inferred safely.
